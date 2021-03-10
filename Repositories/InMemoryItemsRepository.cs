@@ -5,22 +5,36 @@ using TyreStore.Models;
 
 namespace TyreStore.Repositories
 {
-    class InMemmoryItemsRepository
+    class InMemmoryItemsRepository : IItemsRepository
     {
-        private readonly List<Item> Items = new(){
+        private readonly List<Item> Items = new()
+        {
             new Item { Id = Guid.NewGuid(), Name = "Bridgestone", Price = 44, Width = 205, Height = 55, Inch = 16, CreatedDate = DateTimeOffset.UtcNow },
             new Item { Id = Guid.NewGuid(), Name = "Hankook", Price = 44, Width = 205, Height = 55, Inch = 16, CreatedDate = DateTimeOffset.UtcNow },
             new Item { Id = Guid.NewGuid(), Name = "Dunlop", Price = 44, Width = 205, Height = 55, Inch = 16, CreatedDate = DateTimeOffset.UtcNow },
             new Item { Id = Guid.NewGuid(), Name = "Pirelli", Price = 44, Width = 205, Height = 55, Inch = 16, CreatedDate = DateTimeOffset.UtcNow },
             new Item { Id = Guid.NewGuid(), Name = "Continental", Price = 44, Width = 205, Height = 55, Inch = 16, CreatedDate = DateTimeOffset.UtcNow },
         };
-        
-        public IEnumerable<Item> GetItems() {
+
+        public IEnumerable<Item> GetItems()
+        {
             return Items;
         }
 
-        public Item GetItem(Guid id) {
+        public Item GetItem(Guid id)
+        {
             return Items.Where(item => item.Id == id).SingleOrDefault();
+        }
+
+        public void CreateItem(Item item)
+        {
+            Items.Add(item);
+        }
+
+        public void UpdateItem(Item item)
+        {
+            var index = Items.FindIndex(existingItem => existingItem.Id == item.Id);
+            Items[index] = item;
         }
     }
 }
