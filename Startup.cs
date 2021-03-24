@@ -27,7 +27,16 @@ namespace TyreStore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => {
+                options.AddPolicy(name: "mySpecificOrigin", builder => {
+                    builder.WithOrigins("http://localhost:3000")
+                    .AllowAnyHeader()
+                    .WithMethods("GET");
+                });
+            });
+
             services.AddSingleton<IItemsRepository, InMemmoryItemsRepository>();
+            services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -48,6 +57,8 @@ namespace TyreStore
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 

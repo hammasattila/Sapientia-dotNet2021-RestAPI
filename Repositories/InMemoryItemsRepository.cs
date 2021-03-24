@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TyreStore.Models;
 
 namespace TyreStore.Repositories
@@ -16,25 +17,35 @@ namespace TyreStore.Repositories
             new Item { Id = Guid.NewGuid(), Name = "Continental", Price = 44, Width = 205, Height = 55, Inch = 16, CreatedDate = DateTimeOffset.UtcNow },
         };
 
-        public IEnumerable<Item> GetItems()
+        public IEnumerable<Item> GetItemsAsync()
         {
             return Items;
         }
 
-        public Item GetItem(Guid id)
+        public async Task<Item> GetItemAsync(Guid id)
         {
-            return Items.Where(item => item.Id == id).SingleOrDefault();
+            var item = Items.Where(item => item.Id == id).SingleOrDefault();
+            return await Task.FromResult(item);
         }
 
-        public void CreateItem(Item item)
+        public async Task CreateItemAsync(Item item)
         {
             Items.Add(item);
+            await Task.CompletedTask;
         }
 
-        public void UpdateItem(Item item)
+        public async Task UpdateItemAsync(Item item)
         {
             var index = Items.FindIndex(existingItem => existingItem.Id == item.Id);
             Items[index] = item;
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteItemAsync(Guid id)
+        {
+            var index = Items.FindIndex(existingItem => existingItem.Id == id);
+            Items.RemoveAt(index);
+            await Task.CompletedTask;
         }
     }
 }

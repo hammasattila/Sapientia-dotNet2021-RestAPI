@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TyreStore.Dtos;
 using TyreStore.Models;
@@ -20,18 +22,20 @@ namespace TyreStore.Controllers
         }
 
         // Get/Items
+        [EnableCors("mySpecificOrigin")]
         [HttpGet]
-        public IEnumerable<ItemDto> GetItems()
+        public IEnumerable<ItemDto> GetItemsAsync()
         {
-            var items = repository.GetItems().Select(item => item.MapToDto());
+            var items = repository.GetItemsAsync().Select(item => item.MapToDto());
             return items;
         }
 
         // Get/Item/{id}
+        [EnableCors("mySpecificOrigin")]
         [HttpGet("{id}")]
-        public ActionResult<ItemDto> GetItem(Guid id)
+        public async Task<ActionResult<ItemDto>> GetItemAsync(Guid id)
         {
-            var item = repository.GetItem(id);
+            var item = await repository.GetItemAsync(id);
             if (item is null)
             {
                 return NotFound();
@@ -42,7 +46,7 @@ namespace TyreStore.Controllers
 
         // Post/Item/
         [HttpPost]
-        public ActionResult<ItemDto> CreateItem(CreateItemDto createItemDto)
+        public async Task<ActionResult<ItemDto>> CreateItem(CreateItemDto createItemDto)
         {
             Item item = new()
             {
@@ -55,15 +59,15 @@ namespace TyreStore.Controllers
                 CreatedDate = DateTimeOffset.UtcNow
             };
 
-            repository.CreateItem(item);
-            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item.MapToDto());
+            await repository.CreateItemAsync(item);
+            return CreatedAtAction(nameof(GetItemAsync), new { id = item.Id }, item.MapToDto());
         }
 
         // Put/item/
         [HttpPut("{id}")]
-        public ActionResult<ItemDto> UpdateItem(Guid id, UpdateItemDto updateItemDto)
+        public async Task<ActionResult<ItemDto>> UpdateItem(Guid id, UpdateItemDto updateItemDto)
         {
-            var existingItem = repository.GetItem(id);
+            var existingItem = await repository.GetItemAsync(id);
 
             if(existingItem is null) {
                 return NotFound();
@@ -78,7 +82,21 @@ namespace TyreStore.Controllers
                 Price = updateItemDto.Price
             };
 
-            repository.UpdateItem(updateItem);
+            await repository.UpdateItemAsync(updateItem);
+            return NoContent();
+        }
+
+        // Delete/item/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteItemAsync(Guid id)
+        {
+            var existingItem = await repository.GetItemAsync(id);
+
+            if(existingItem is null) {
+                return NotFound();
+            }
+
+            await repository.DeleteItemAsync(id);
             return NoContent();
         }
     }
