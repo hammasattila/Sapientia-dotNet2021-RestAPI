@@ -31,7 +31,7 @@ namespace TyreStore
                 options.AddPolicy(name: "mySpecificOrigin", builder => {
                     builder.WithOrigins("http://localhost:3000")
                     .AllowAnyHeader()
-                    .WithMethods("GET");
+                    .AllowAnyMethod();
                 });
             });
 

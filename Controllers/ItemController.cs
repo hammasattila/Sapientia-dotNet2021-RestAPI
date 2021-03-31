@@ -45,6 +45,7 @@ namespace TyreStore.Controllers
         }
 
         // Post/Item/
+        [EnableCors("mySpecificOrigin")]
         [HttpPost]
         public async Task<ActionResult<ItemDto>> CreateItem(CreateItemDto createItemDto)
         {
@@ -64,6 +65,7 @@ namespace TyreStore.Controllers
         }
 
         // Put/item/
+        [EnableCors("mySpecificOrigin")]
         [HttpPut("{id}")]
         public async Task<ActionResult<ItemDto>> UpdateItem(Guid id, UpdateItemDto updateItemDto)
         {
@@ -87,6 +89,7 @@ namespace TyreStore.Controllers
         }
 
         // Delete/item/{id}
+        [EnableCors("mySpecificOrigin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteItemAsync(Guid id)
         {
